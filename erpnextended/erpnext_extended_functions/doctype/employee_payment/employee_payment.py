@@ -7,4 +7,13 @@ import frappe
 from frappe.model.document import Document
 
 class EmployeePayment(Document):
-	pass
+	"""Set full name"""
+	for allocation in self.employee_allocations:
+		if not allocation.full_name:
+			allocation.full_name = get_full_name(allocation.employee)
+
+@frappe.whitelist()
+def get_full_name(employee):
+	emp = frappe.get_doc("Employee",employee)
+	return " ".join(filter(None,[emp.first_name,emp.last_name]))
+
