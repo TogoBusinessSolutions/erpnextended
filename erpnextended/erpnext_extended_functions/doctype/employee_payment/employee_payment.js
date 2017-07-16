@@ -2,9 +2,8 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Employee Payment Allocation', {
-        employee_payment_allocation: function(frm, cdt, cdn){
+        employee_allocations_all: function(frm, cdt, cdn){
                 var employee_payment_allocation = frappe.model.get_doc(cdt, cdn);
-                frappe.msgprint("{0} save the doctype ", [employee_payment_allocation.employee]);
 		if(employee_payment_allocation.employee){
                         frm.call({
                                 method:
@@ -19,5 +18,13 @@ frappe.ui.form.on('Employee Payment Allocation', {
                 }else{
                         frappe.model.set_value(cdt, cdn, "full_name", null);
                 }
+        }
+});
+
+frappe.ui.form.on('Employee Payment', {
+        journal_entry: function(frm, cdt, cdn){
+                var journal = frappe.model.get_doc(cdt, cdn);
+                frappe.msgprint("{0} save the doctype ", [journal.name]);
+                frappe.model.set_value(cdt, cdn, "amount", journal.total_amount);
         }
 });
