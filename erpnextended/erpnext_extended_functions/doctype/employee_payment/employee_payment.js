@@ -20,11 +20,3 @@ frappe.ui.form.on('Employee Payment Allocation', {
                 }
         }
 });
-
-frappe.ui.form.on('Employee Payment', {
-        journal_entry: function(frm, cdt, cdn){
-                var journal = frappe.model.get_doc(cdt, cdn);
-                frappe.msgprint("{0} save the doctype ", [journal.name]);
-                frappe.model.set_value(cdt, cdn, "amount", journal.total_amount);
-        }
-});
