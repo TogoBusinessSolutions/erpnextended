@@ -11,6 +11,7 @@ app_color = "grey"
 app_email = "satish@togosolutions.co.za"
 app_license = "MIT"
 
+
 # Includes in <head>
 # ------------------
 
@@ -86,6 +87,12 @@ app_license = "MIT"
 # 		"on_trash": "method"
 #	}
 # }
+
+doc_events = {
+	"Sales Invoice": {
+		"validate": "erpnextended.erpnext_extended_functions.doctype.user_warehouse_permission.user_warehouse_permission.validate_wh_allowed_for_user"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
