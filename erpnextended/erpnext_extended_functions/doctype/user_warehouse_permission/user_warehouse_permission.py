@@ -12,7 +12,7 @@ class UserWarehousePermission(Document):
 def validate_wh_allowed_for_user(doc,method):
 	"""Check if the user is allowed to post to the specified warehouse"""
 	user = frappe.session.user
-	allowed_warehouses = frappe.get_all('User Warehouse Permission', filters={'user': user,'warehouse'=warehouse}, fields=['warehouse'])
+	allowed_warehouses = frappe.get_all('User Warehouse Permission', filters={'user': user,'warehouse':warehouse}, fields=['warehouse'])
 	found = False
 	#Check that each warehouse selected in items is in the user list
 	for item in doc.items:
