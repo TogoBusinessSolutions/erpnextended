@@ -88,11 +88,11 @@ app_license = "MIT"
 #	}
 # }
 
-doc_events = {
-	"Sales Invoice": {
-		"validate": "erpnextended.erpnext_extended_functions.doctype.user_warehouse_permission.user_warehouse_permission.validate_wh_allowed_for_user"
-	}
-}
+#doc_events = {
+#	"Sales Invoice": {
+#		"validate": "erpnextended.erpnext_extended_functions.doctype.user_warehouse_permission.user_warehouse_permission.validate_wh_allowed_for_user"
+#	}
+#}
 
 # Scheduled Tasks
 # ---------------
