@@ -18,14 +18,30 @@ frappe.ui.form.on('Employee Payment Allocation', {
                 }else{
                         frappe.model.set_value(cdt, cdn, "full_name", null);
                 }
-        }
+        },
+	amount: function(frm, dt, dn) {
+		cur_frm.cscript.update_totals(frm.doc);
+	}
 });
 
 frappe.ui.form.on('Employee Payment', {
-        journal_entry: function(frm, cdt, cdn){
-                //var journal = frappe.model.get_doc(cdt, cdn);
-                alert(frm.doc.journal_entry);
-		//frappe.msgprint("{0} save the doctype ", [journal.name]);
-                //frappe.model.set_value(cdt, cdn, "amount", journal.total_amount);
+        journal_entry: function(frm, dt, dn){
+		journal_entryd = frappe.model.get_doc(dt, dn);
+                alert(journal_entryd.name);
         }
 });
+
+cur_frm.cscript.update_totals = function(doc) {
+        var ta=0.0;
+        var allocations = doc.employee_allocations || [];
+        for(var i in allocations) {
+                ta += flt(allocations[i].amount, precision("amount", allocations[i]));
+        }
+        var doc = locals[doc.doctype][doc.name];
+        doc.allocated_amount = ta;
+        refresh_many(['allocated_amount']);
+}
+
+cur_frm.cscript.validate = function(doc,cdt,cdn) {
+        cur_frm.cscript.update_totals(doc);
+}
