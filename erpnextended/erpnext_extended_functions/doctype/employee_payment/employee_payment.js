@@ -25,10 +25,21 @@ frappe.ui.form.on('Employee Payment Allocation', {
 });
 
 frappe.ui.form.on('Employee Payment', {
-        journal_entry: function(frm, dt, dn){
-		journal_entryd = frappe.model.get_doc(dt, dn);
-                alert(journal_entryd.name);
-        }
+        journal_entry: function(frm,cdt,cdn) {
+		frappe.call({
+			method: "frappe.client.get_value",
+			args: {
+				doctype: "Journal Entry",
+				filters: {"name": frm.doc.journal_entry},
+				fieldname: "total_debit"
+			},
+			callback: function(r){
+				if(r.message){
+					frappe.model.set_value(cdt, cdn, "amount", r.message.total_debit);
+				}
+			}
+		});
+	}
 });
 
 cur_frm.cscript.update_totals = function(doc) {

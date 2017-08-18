@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.utils import cstr, flt, fmt_money, formatdate
 
 class EmployeePayment(Document):
 	def validate(self):
@@ -14,6 +15,11 @@ class EmployeePayment(Document):
 			if not allocation.full_name:
 				allocation.full_name = get_full_name(allocation.employee)
 		validate_account_allowed(self.journal_entry)
+		validate_amount(self.amount, self.allocated_amount)
+
+def validate_amount(journal_amount,allocated_amount):
+	if(flt(journal_amount) != flt(allocated_amount)):
+		frappe.throw(_("Allocated payments total must match Journal Amount {0}.").format(journal_amount))
 
 @frappe.whitelist()
 def get_full_name(employee):
