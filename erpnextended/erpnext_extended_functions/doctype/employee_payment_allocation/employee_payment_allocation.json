@@ -41,7 +41,7 @@
    "reqd": 1, 
    "search_index": 0, 
    "set_only_once": 0, 
-   "unique": 1
+   "unique": 0
   }, 
   {
    "allow_bulk_edit": 0, 
@@ -176,7 +176,7 @@
  "issingle": 0, 
  "istable": 1, 
  "max_attachments": 0, 
- "modified": "2017-08-18 18:42:43.132039", 
+ "modified": "2017-08-19 21:56:47.924371", 
  "modified_by": "Administrator", 
  "module": "ERPNext Extended Functions", 
  "name": "Employee Payment Allocation", 
