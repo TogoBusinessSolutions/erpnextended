@@ -16,13 +16,6 @@ erpnextended.egg-info/top_level.txt
 erpnextended/config/__init__.py
 erpnextended/config/desktop.py
 erpnextended/config/docs.py
-erpnextended/employee_payments/__init__.py
-erpnextended/employee_payments/doctype/__init__.py
-erpnextended/employee_payments/doctype/testdoc/__init__.py
-erpnextended/employee_payments/doctype/testdoc/test_testdoc.py
-erpnextended/employee_payments/doctype/testdoc/testdoc.js
-erpnextended/employee_payments/doctype/testdoc/testdoc.json
-erpnextended/employee_payments/doctype/testdoc/testdoc.py
 erpnextended/erpnext_extended_functions/__init__.py
 erpnextended/erpnext_extended_functions/doctype/__init__.py
 erpnextended/erpnext_extended_functions/doctype/employee_payment/__init__.py
