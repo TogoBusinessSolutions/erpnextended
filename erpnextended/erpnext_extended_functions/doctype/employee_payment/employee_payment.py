@@ -44,3 +44,7 @@ def validate_account_allowed(journal_entry):
 	if not found:
 		frappe.throw(_("Journal {0} is not a valid salary entry.").format(journal_entry))
 
+	#If here account is valid, check if Journal exists for submitted documents
+	ep = frappe.db.get_values("Employee Payment", {"journal_entry": journal_entry,"docstatus":1})
+	if(ep):
+		frappe.throw(_("Journal {0} alrady in allocated in {1}.").format(journal_entry,ep[0][0]))
