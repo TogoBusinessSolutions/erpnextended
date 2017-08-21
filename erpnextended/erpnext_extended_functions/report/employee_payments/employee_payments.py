@@ -33,13 +33,14 @@ def execute(filters=None):
                 }
 	]
 
-	data = frappe.db.sql('''select max(date(ep.posting_date)) as start_date,
-		min(date(ep.posting_date)) as end_date,
-		sum(ep.amount) as amount, epa.full_name,epa.payment_type
+	data = frappe.db.sql('''select min(date(ep.posting_date)) as start_date,
+		max(date(ep.posting_date)) as end_date,
+		sum(epa.amount) as amount, epa.full_name,epa.payment_type
 		from `tabEmployee Payment` ep inner join
 		`tabEmployee Payment Allocation` epa 
 		on ep.name = epa.parent
-			where date(ep.posting_date) between %s and %s
+			where (date(ep.posting_date) between %s and %s)
+			and ep.docstatus = 1
 		group by epa.full_name,epa.payment_type
 		 ''', (filters.from_date, filters.to_date))
 
