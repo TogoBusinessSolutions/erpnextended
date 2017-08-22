@@ -28,5 +28,17 @@ def get_data():
 					"description": _("Unallocated Salary Journals")
                                 }
 			]
+		},
+		{
+			"label": _("Sales Reports"),
+                        "items": [
+                                {
+                                        "type": "report",
+                                        "name": "Commissions Summary By Sales Person",
+                                        "doctype": "Journal Entry",
+                                        "is_query_report": True,
+                                        "description": _("Commissions Summary By Sales Person")
+                                }
+                        ]
 		}
 	]
