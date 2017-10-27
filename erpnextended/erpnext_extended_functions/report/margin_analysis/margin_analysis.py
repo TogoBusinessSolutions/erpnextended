@@ -43,7 +43,7 @@ def execute(filters=None):
                 tsi.name,tsi.creation,tsi.grand_total,tsi.territory,'Sales Invoice' as transaction_type,
                 SUM(CASE tsii.item_code
                     WHEN 'NS-TRANS' THEN tsii.amount
-                    ELSE tip.price_list_rate
+                    ELSE tip.price_list_rate * (1 + IFNULL(tit.tax_rate,0)/100)
                 END) as 'item_cost'
             FROM 
                 `tabSales Invoice` tsi
@@ -53,6 +53,8 @@ def execute(filters=None):
                 `tabItem` ti on ti.name = tsii.item_code 
             LEFT OUTER JOIN
                 `tabItem Price` tip on tip.item_code = ti.name
+	    LEFT OUTER JOIN 
+		`tabItem Tax` tit on tit.parent = ti.name
             WHERE 
                 tsi.docstatus = 1 AND tsi.creation between %s and %s AND tip.price_list = 'Standard Buying'
             GROUP BY
@@ -62,7 +64,7 @@ def execute(filters=None):
                 tsi.name,tsi.creation,tsi.grand_total,tsi.territory,'Sales Order' as transaction_type,
                 SUM(CASE tsii.item_code
                     WHEN 'NS-TRANS' THEN tsii.amount
-                    ELSE tip.price_list_rate
+                    ELSE tip.price_list_rate * (1 + IFNULL(tit.tax_rate,0)/100 )
                 END) as 'item_cost'
             FROM 
                 `tabSales Order` tsi
@@ -72,7 +74,9 @@ def execute(filters=None):
                 `tabItem` ti on ti.name = tsii.item_code 
             LEFT OUTER JOIN
                 `tabItem Price` tip on tip.item_code = ti.name
-            WHERE 
+            LEFT OUTER JOIN 
+                `tabItem Tax` tit on tit.parent = ti.name
+	    WHERE 
                 tsi.docstatus = 1 AND tsi.creation between %s and %s AND tip.price_list = 'Standard Buying' and tsi.status <> 'Completed'
             GROUP BY
                 tsi.name,tsi.creation,tsi.grand_total,tsi.territory,transaction_type
