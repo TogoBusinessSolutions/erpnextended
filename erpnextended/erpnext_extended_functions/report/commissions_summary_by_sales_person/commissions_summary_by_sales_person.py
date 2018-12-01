@@ -38,22 +38,7 @@ def execute(filters=None):
 		SUM(tpe.paid_amount) as 'Amount',
 		MIN(tpe.posting_date) as 'Start_date',
 		MAX(tpe.posting_date) as 'End_Date',
-		CASE tpe.paid_to 
-			WHEN 'Cash - PFS' THEN 'Randburg' 
-			WHEN 'Cash Cosmo - PFS' THEN 'Cosmo' 
-			WHEN 'Standard Bank Cosmo - PFS' THEN 'Cosmo' 
-			WHEN 'Standard Bank - PFS' THEN 'Randburg' 
-			WHEN 'Standard Bank Warehouse - PFS' THEN 'Warehouse'
-			WHEN 'Standard Bank Mall - PFS' THEN 'Mall'
-			WHEN 'Cash - Mall - PFS' THEN 'Mall'
-			WHEN 'Cash - Warehouse - PFS' THEN 'Warehouse'
-			WHEN 'Standard Bank - hahashu - PFS' THEN 'hahashu.co.za'
-			When 'Cash hahashu.co.za - PFS' THEN 'hahashu.co.za'
-			WHEN 'Standard Bank Fourways - PFS' THEN 'Fourways'
-			When 'Cash Fourways - PFS' THEN 'Fourways'
-			When 'Cash Boulders - PFS' THEN 'Boulders'
-			When 'Standard Bank Boulders - PFS' THEN 'Boulders'
-		END as Account
+		sa1.branch as Account
 		FROM 
 			`tabPayment Entry` tpe
 		LEFT OUTER JOIN
@@ -64,13 +49,17 @@ def execute(filters=None):
 			`tabSales Team` tst2 
 		ON
 			tst2.parent=ter.reference_name
+		LEFT OUTER JOIN
+			`tabSales Accounts` sa1
+		ON
+			sa1.account = tpe.paid_to
 		WHERE
 			tpe.posting_date between %s and %s
 		AND 
 			tpe.docstatus=1
 		AND
 			tpe.payment_type='Receive'
-		AND tpe.paid_to in ('Cash - PFS','Cash Cosmo - PFS','Standard Bank Cosmo - PFS','Standard Bank - PFS','Standard Bank Mall - PFS','Standard Bank Warehouse - PFS','Cash - Mall - PFS','Cash - Warehouse - PFS','Standard Bank - hahashu - PFS','Cash hahashu.co.za - PFS','Standard Bank Fourways - PFS','Cash Fourways - PFS','Cash Boulders - PFS','Standard Bank Boulders - PFS')
+		AND tpe.paid_to in (SELECT sa2.account from `tabSales Accounts` sa2)
 		GROUP BY
 			Account,tst2.sales_person
 		UNION ALL
@@ -78,23 +67,7 @@ def execute(filters=None):
 			COALESCE(tst.sales_person,tst1.sales_person) as 'Sales_Person',sum(tge.debit) as 'Amount:Currency:100', 
 			Min(tge.posting_date) 'Start_Date:Date:150', 
 			Max(tge.posting_date) 'End_Date:Date:150',
-			CASE tge.account 
-				WHEN 'Cash - PFS' THEN 'Randburg' 
-				WHEN 'Cash Cosmo - PFS' THEN 'Cosmo' 
-				WHEN 'Standard Bank Cosmo - PFS' THEN 'Cosmo' 
-				WHEN 'Standard Bank - PFS' THEN 'Randburg'
-				WHEN 'Standard Bank Warehouse - PFS' THEN 'Warehouse'
-				WHEN 'Standard Bank Mall - PFS' THEN 'Mall'
-				WHEN 'Cash - Mall - PFS' THEN 'Mall'
-				WHEN 'Cash - Warehouse - PFS' THEN 'Warehouse' 
-				WHEN 'Standard Bank - hahashu - PFS' THEN 'hahashu.co.za'
-				When 'Cash hahashu.co.za - PFS' THEN 'hahashu.co.za'
-				WHEN 'Standard Bank Fourways - PFS' THEN 'Fourways'
-				When 'Cash Fourways - PFS' THEN 'Fourways'
-				When 'Cash Boulders - PFS' THEN 'Boulders'
-                        	When 'Standard Bank Boulders - PFS' THEN 'Boulders'
-			END 
-				as Account
+			sa3.branch as Account
 			FROM 
 				`tabGL Entry` tge 
 			left outer join 
@@ -111,39 +84,28 @@ def execute(filters=None):
 			left outer join 
 				`tabJournal Entry` tje 
 			on 
-				tje.name=tjea.parent 
+				tje.name=tjea.parent
+			LEFT OUTER JOIN `tabSales Accounts` sa3
+			ON
+				sa3.account = tge.account 
 			WHERE 
-				(tge.posting_date between %s and %s AND tge.account in ('Cash - PFS','Cash Cosmo - PFS','Standard Bank Cosmo - PFS','Standard Bank - PFS','Standard Bank Mall - PFS','Standard Bank Warehouse - PFS','Cash - Mall - PFS','Cash - Warehouse - PFS','Standard Bank - hahashu - PFS','Cash hahashu.co.za - PFS','Standard Bank Fourways - PFS','Cash Fourways - PFS','Cash Boulders - PFS','Standard Bank Boulders - PFS')) AND ((tge.debit >0 and tge.docstatus=1 AND tjea.reference_type in ('Sales Invoice','Sales Order')) OR tge.voucher_type='Sales Invoice') Group by Account, Sales_Person
+				(tge.posting_date between %s and %s AND tge.account in (SELECT sa5.account from `tabSales Accounts` sa5)) AND ((tge.debit >0 and tge.docstatus=1 AND tjea.reference_type in ('Sales Invoice','Sales Order')) OR tge.voucher_type='Sales Invoice') Group by Account, Sales_Person
 		UNION ALL
 		SELECT
 			'Refund' as 'Sales_Person',-1*sum(tge.debit) as 'Amount:Currency:100', 
                         Min(tge.posting_date) 'Start_Date:Date:150', 
                         Max(tge.posting_date) 'End_Date:Date:150',
-                        CASE tge.against
-                                WHEN 'Cash - PFS' THEN 'Randburg' 
-                                WHEN 'Cash Cosmo - PFS' THEN 'Cosmo' 
-                                WHEN 'Standard Bank Cosmo - PFS' THEN 'Cosmo' 
-                                WHEN 'Standard Bank - PFS' THEN 'Randburg'
-                                WHEN 'Standard Bank Warehouse - PFS' THEN 'Warehouse'
-                                WHEN 'Standard Bank Mall - PFS' THEN 'Mall'
-                                WHEN 'Cash - Mall - PFS' THEN 'Mall'
-                                WHEN 'Cash - Warehouse - PFS' THEN 'Warehouse' 
-                                WHEN 'Standard Bank - hahashu - PFS' THEN 'hahashu.co.za'
-                                When 'Cash hahashu.co.za - PFS' THEN 'hahashu.co.za'
-                                WHEN 'Standard Bank Fourways - PFS' THEN 'Fourways'
-                                When 'Cash Fourways - PFS' THEN 'Fourways'
-                                When 'Cash Boulders - PFS' THEN 'Boulders'
-                                When 'Standard Bank Boulders - PFS' THEN 'Boulders'
-                        END 
-                                as Account
+                        sa4.branch as Account
                         FROM 
                                 `tabGL Entry` tge
+			LEFT OUTER JOIN `tabSales Accounts` sa4
+			ON sa4.account = tge.against
 			WHERE 
                                 (
 				tge.posting_date between %s and %s 
-				AND account = 'Debtors - PFS' 
-				and voucher_type='Journal Entry' 
-				AND docstatus=1 
+				AND tge.account in ('Debtors - PFS','Debtors - SF','Debtors - SFPL') 
+				and tge.voucher_type='Journal Entry' 
+				AND tge.docstatus=1 
 				)
 			GROUP BY
 				tge.against
