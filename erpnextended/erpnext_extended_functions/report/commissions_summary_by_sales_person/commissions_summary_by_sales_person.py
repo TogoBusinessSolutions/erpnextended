@@ -31,6 +31,11 @@ def execute(filters=None):
                         'fieldtype': 'data',
                         'label': 'Branch'
                 },
+                {
+                        'fieldname': 'Territory',
+                        'fieldtype': 'data',
+                        'label': 'Territory'
+                }
         ]
 
         data = frappe.db.sql('''SELECT
@@ -53,10 +58,11 @@ def execute(filters=None):
 			When 'Cash Fourways - PFS' THEN 'Fourways'
 			When 'Cash Boulders - PFS' THEN 'Boulders'
 			When 'Standard Bank Boulders - PFS' THEN 'Boulders'
-		END as Account
+		END as Account,
+		tsi.territory as Territory
 		FROM 
 			`tabPayment Entry` tpe
-		LEFT OUTER JOIN
+		LEFT JOIN
 			`tabPayment Entry Reference` ter
 		ON
 			tpe.name=ter.parent
@@ -64,6 +70,10 @@ def execute(filters=None):
 			`tabSales Team` tst2 
 		ON
 			tst2.parent=ter.reference_name
+		LEFT JOIN
+			`tabSales Invoice` tsi
+		ON
+			ter.reference_name = tsi.name 
 		WHERE
 			tpe.posting_date between %s and %s
 		AND 
@@ -72,7 +82,7 @@ def execute(filters=None):
 			tpe.payment_type='Receive'
 		AND tpe.paid_to in ('Cash - PFS','Cash Cosmo - PFS','Standard Bank Cosmo - PFS','Standard Bank - PFS','Standard Bank Mall - PFS','Standard Bank Warehouse - PFS','Cash - Mall - PFS','Cash - Warehouse - PFS','Standard Bank - hahashu - PFS','Cash hahashu.co.za - PFS','Standard Bank Fourways - PFS','Cash Fourways - PFS','Cash Boulders - PFS','Standard Bank Boulders - PFS')
 		GROUP BY
-			Account,tst2.sales_person
+			Account,tst2.sales_person,Territory
 		UNION ALL
 		SELECT 
 			COALESCE(tst.sales_person,tst1.sales_person) as 'Sales_Person',sum(tge.debit) as 'Amount:Currency:100', 
@@ -94,7 +104,8 @@ def execute(filters=None):
 				When 'Cash Boulders - PFS' THEN 'Boulders'
                         	When 'Standard Bank Boulders - PFS' THEN 'Boulders'
 			END 
-				as Account
+				as Account,
+			'' as Territory
 			FROM 
 				`tabGL Entry` tge 
 			left outer join 
@@ -113,7 +124,7 @@ def execute(filters=None):
 			on 
 				tje.name=tjea.parent 
 			WHERE 
-				(tge.posting_date between %s and %s AND tge.account in ('Cash - PFS','Cash Cosmo - PFS','Standard Bank Cosmo - PFS','Standard Bank - PFS','Standard Bank Mall - PFS','Standard Bank Warehouse - PFS','Cash - Mall - PFS','Cash - Warehouse - PFS','Standard Bank - hahashu - PFS','Cash hahashu.co.za - PFS','Standard Bank Fourways - PFS','Cash Fourways - PFS','Cash Boulders - PFS','Standard Bank Boulders - PFS')) AND ((tge.debit >0 and tge.docstatus=1 AND tjea.reference_type in ('Sales Invoice','Sales Order')) OR tge.voucher_type='Sales Invoice') Group by Account, Sales_Person
+				(tge.posting_date between %s and %s AND tge.account in ('Cash - PFS','Cash Cosmo - PFS','Standard Bank Cosmo - PFS','Standard Bank - PFS','Standard Bank Mall - PFS','Standard Bank Warehouse - PFS','Cash - Mall - PFS','Cash - Warehouse - PFS','Standard Bank - hahashu - PFS','Cash hahashu.co.za - PFS','Standard Bank Fourways - PFS','Cash Fourways - PFS','Cash Boulders - PFS','Standard Bank Boulders - PFS')) AND ((tge.debit >0 and tge.docstatus=1 AND tjea.reference_type in ('Sales Invoice','Sales Order')) OR tge.voucher_type='Sales Invoice') Group by Account, Sales_Person,Territory
 		UNION ALL
 		SELECT
 			'Refund' as 'Sales_Person',-1*sum(tge.debit) as 'Amount:Currency:100', 
@@ -135,7 +146,8 @@ def execute(filters=None):
                                 When 'Cash Boulders - PFS' THEN 'Boulders'
                                 When 'Standard Bank Boulders - PFS' THEN 'Boulders'
                         END 
-                                as Account
+                                as Account,
+						'' as Territory
                         FROM 
                                 `tabGL Entry` tge
 			WHERE 
@@ -146,7 +158,7 @@ def execute(filters=None):
 				AND docstatus=1 
 				)
 			GROUP BY
-				tge.against
+				tge.against,Territory
                  ''', (filters.from_date, filters.to_date,filters.from_date, filters.to_date,filters.from_date, filters.to_date))
 
         return columns, data
