@@ -128,7 +128,7 @@ def execute(filters=None):
 			tpe.payment_type='Receive'
 		AND tpe.paid_to in ('Cash - PFS','Cash Cosmo - PFS','Standard Bank Cosmo - PFS','Standard Bank - PFS','Standard Bank Mall - PFS','Standard Bank Warehouse - PFS','Cash - Mall - PFS','Cash - Warehouse - PFS','Standard Bank - hahashu - PFS','Cash hahashu.co.za - PFS','Standard Bank Fourways - PFS','Cash Fourways - PFS','Cash Boulders - PFS','Standard Bank Boulders - PFS')
 		GROUP BY
-			Account,tst2.sales_person,Territory, Transaction
+			Account,tst2.sales_person,Territory
 		UNION ALL
 		SELECT 
 			COALESCE(tst.sales_person,tst1.sales_person) as 'Sales_Person',sum(tge.debit) as 'Amount:Currency:100', 
@@ -197,8 +197,7 @@ def execute(filters=None):
                         	When 'Standard Bank Boulders - PFS' THEN 'Boulders'
 			END 
 				as Account,
-			tso1.territory as Territory,
-			'Sales Order' as Transaction
+			tso1.territory as Territory
 			FROM 
 				`tabGL Entry` tge 
 			left outer join 
