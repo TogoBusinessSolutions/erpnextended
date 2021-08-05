@@ -105,13 +105,15 @@ def execute(filters=None):
                         	When 'Standard Bank Boulders - PFS' THEN 'Boulders'
 			END 
 				as Account,
-			'' as Territory
+			tsi1.territory as Territory
 			FROM 
 				`tabGL Entry` tge 
 			left outer join 
 				`tabJournal Entry Account` tjea 
 			on 
-				tge.voucher_no=tjea.parent 
+				tge.voucher_no=tjea.parent
+			left join `tabSales Invoice` tsi1
+			on tsi1.name = tge.voucher_no
 			left outer join 
 				`tabSales Team` tst 
 			on 
