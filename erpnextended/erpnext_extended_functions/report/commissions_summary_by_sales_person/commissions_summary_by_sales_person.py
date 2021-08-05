@@ -62,7 +62,7 @@ def execute(filters=None):
 		tsi.territory as Territory
 		FROM 
 			`tabPayment Entry` tpe
-		LEFT JOIN
+		INNER JOIN
 			`tabPayment Entry Reference` ter
 		ON
 			tpe.name=ter.parent
@@ -70,7 +70,7 @@ def execute(filters=None):
 			`tabSales Team` tst2 
 		ON
 			tst2.parent=ter.reference_name
-		LEFT JOIN
+		INNER JOIN
 			`tabSales Invoice` tsi
 		ON
 			ter.reference_name = tsi.name 
@@ -112,8 +112,9 @@ def execute(filters=None):
 				`tabJournal Entry Account` tjea 
 			on 
 				tge.voucher_no=tjea.parent
-			left join `tabSales Invoice` tsi1
-			on tsi1.name = tge.voucher_no
+			inner join `tabSales Invoice` tsi1
+			on 
+				tsi1.name = tge.voucher_no
 			left outer join 
 				`tabSales Team` tst 
 			on 
