@@ -208,6 +208,6 @@ def execute(filters=None):
 				)
 			GROUP BY
 				tge.against,Territory
-                 ''', (filters.from_date, filters.to_date,filters.from_date, filters.to_date,filters.from_date, filters.to_date))
+                 ''', (filters.from_date, filters.to_date,filters.from_date, filters.to_date,filters.from_date, filters.to_date,filters.from_date, filters.to_date))
 
         return columns, data
