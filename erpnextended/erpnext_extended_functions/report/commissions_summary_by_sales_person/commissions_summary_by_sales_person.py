@@ -85,11 +85,11 @@ def execute(filters=None):
 			Account,tst2.sales_person,Territory
 		UNION ALL
 		SELECT
-		tst3.sales_person as 'Sales_Person', 
-		SUM(tpe1.paid_amount) as 'Amount',
-		MIN(tpe1.posting_date) as 'Start_date',
-		MAX(tpe1.posting_date) as 'End_Date',
-		CASE tpe1.paid_to 
+		tst2_so.sales_person as 'Sales_Person', 
+		SUM(tpe_so.paid_amount) as 'Amount',
+		MIN(tpe_so.posting_date) as 'Start_date',
+		MAX(tpe_so.posting_date) as 'End_Date',
+		CASE tpe_so.paid_to 
 			WHEN 'Cash - PFS' THEN 'Randburg' 
 			WHEN 'Cash Cosmo - PFS' THEN 'Cosmo' 
 			WHEN 'Standard Bank Cosmo - PFS' THEN 'Cosmo' 
@@ -105,30 +105,30 @@ def execute(filters=None):
 			When 'Cash Boulders - PFS' THEN 'Boulders'
 			When 'Standard Bank Boulders - PFS' THEN 'Boulders'
 		END as Account,
-		tso.territory as Territory
+		tso_so.territory as Territory
 		FROM 
-			`tabPayment Entry` tpe1
+			`tabPayment Entry` tpe_so
 		INNER JOIN
-			`tabPayment Entry Reference` ter1
+			`tabPayment Entry Reference` ter_so
 		ON
-			tpe1.name=ter1.parent
+			tpe_so.name=ter_so.parent
 		LEFT OUTER JOIN
-			`tabSales Team` tst3 
+			`tabSales Team` tst2_so
 		ON
-			tst3.parent=ter1.reference_name
+			tst2_so.parent=ter_so.reference_name
 		INNER JOIN
-			`tabSales Order` tso
+			`tabSales Order` tso_so
 		ON
-			ter1.reference_name = tso.name 
+			ter_so.reference_name = tso_so.name 
 		WHERE
-			tpe1.posting_date between %s and %s
+			tpe_so.posting_date between %s and %s
 		AND 
-			tpe1.docstatus=1
+			tpe_so.docstatus=1
 		AND
-			tpe1.payment_type='Receive'
-		AND tpe1.paid_to in ('Cash - PFS','Cash Cosmo - PFS','Standard Bank Cosmo - PFS','Standard Bank - PFS','Standard Bank Mall - PFS','Standard Bank Warehouse - PFS','Cash - Mall - PFS','Cash - Warehouse - PFS','Standard Bank - hahashu - PFS','Cash hahashu.co.za - PFS','Standard Bank Fourways - PFS','Cash Fourways - PFS','Cash Boulders - PFS','Standard Bank Boulders - PFS')
+			tpe_so.payment_type='Receive'
+		AND tpe_so.paid_to in ('Cash - PFS','Cash Cosmo - PFS','Standard Bank Cosmo - PFS','Standard Bank - PFS','Standard Bank Mall - PFS','Standard Bank Warehouse - PFS','Cash - Mall - PFS','Cash - Warehouse - PFS','Standard Bank - hahashu - PFS','Cash hahashu.co.za - PFS','Standard Bank Fourways - PFS','Cash Fourways - PFS','Cash Boulders - PFS','Standard Bank Boulders - PFS')
 		GROUP BY
-			Account,tst3.sales_person,Territory
+			Account,tst2_so.sales_person,Territory
 		UNION ALL
 		SELECT 
 			COALESCE(tst.sales_person,tst1.sales_person) as 'Sales_Person',sum(tge.debit) as 'Amount:Currency:100', 
