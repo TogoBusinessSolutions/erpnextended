@@ -105,7 +105,7 @@ def execute(filters=None):
 			When 'Cash Boulders - PFS' THEN 'Boulders'
 			When 'Standard Bank Boulders - PFS' THEN 'Boulders'
 		END as Account,
-		tsi_so.territory as Territory
+		tso_so.territory as Territory
 		FROM 
 			`tabPayment Entry` tpe_so
 		INNER JOIN
@@ -117,9 +117,9 @@ def execute(filters=None):
 		ON
 			tst2_so.parent=ter_so.reference_name
 		INNER JOIN
-			`tabSales Invoice` tsi_so
+			`tabSales Order` tso_so
 		ON
-			ter_so.reference_name = tsi_so.name 
+			ter_so.reference_name = tso_so.name 
 		WHERE
 			tpe_so.posting_date between %s and %s
 		AND 
